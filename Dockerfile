@@ -36,7 +36,7 @@ COPY . ./
 FROM golang:alpine as development
 
 # Install gcc make and libc-dev to allow Makefile compilation
-RUN apk update && apk add --no-cache gcc make libc-dev neovim neovim-doc ripgrep
+RUN apk update && apk add --no-cache curl git gcc jq libc-dev make ripgrep wget
 
 # Set the working directory to /app
 WORKDIR /usr/src/app
@@ -67,7 +67,7 @@ RUN curl -sSf https://atlasgo.sh | sh
 ENV $PATH:$(go env GOPATH)/bin
 
 # Install szh shell:
-RUN apk add --no-cache zsh git wget
+RUN apk add --no-cache zsh
 
 # Install oh-my-zsh:
 # Uses "Spaceship" theme with some customization. Uses some bundled plugins and installs some more from github
