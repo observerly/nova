@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "Ariga.atlas-hcl",
+    "golang.go",
+    "jakebathman.mysql-syntax",
+    "ms-vscode.makefile-tools",
+    "ms-vscode-remote.remote-containers",
+    "neverik.go-critic",
+    "zxh404.vscode-proto3",
+    "ZainChen.json"
+  ]
+}
