@@ -24,7 +24,11 @@ go.work.sum
 # Environment
 .env
 .env.*
+!.env.example
 !.env.*.example
 
-# Generated Output
+# Generated buf Output
 internal/gen/*
+
+# Generated go Output:
+temp
