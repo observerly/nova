@@ -1,0 +1,61 @@
+{
+  "dockerComposeFile": "../local.yaml",
+  "service": "development",
+  "runServices": [
+    "development",
+    "db"
+  ],
+  "workspaceFolder": "/observerly-birpc",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Ariga.atlas-hcl",
+        "golang.go",
+        "jakebathman.mysql-syntax",
+        "ms-vscode.makefile-tools",
+        "ms-vscode-remote.remote-containers",
+        "neverik.go-critic",
+        "zxh404.vscode-proto3",
+        "ZainChen.json"
+      ]
+    },
+    "recommendations": [
+      "Ariga.atlas-hcl",
+      "golang.go",
+      "jakebathman.mysql-syntax",
+      "ms-vscode.makefile-tools",
+      "ms-vscode-remote.remote-containers",
+      "neverik.go-critic",
+      "zxh404.vscode-proto3",
+      "ZainChen.json"
+    ],
+    "settings": {
+      "editor.codeActionsOnSave": {
+        "source.organizeImports": "always"
+      },
+      "editor.formatOnSave": true,
+      "[go]": {
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": "explicit"
+        },
+        "editor.defaultFormatter": "golang.go",
+        "editor.showFoldingControls": "always",
+        "editor.folding": true,
+        "editor.foldingStrategy": "auto",
+        "editor.formatOnSave": true,
+        "editor.insertSpaces": true,
+        "editor.tabSize": 2,
+        "editor.rulers": [
+          115
+        ]
+      },
+      "terminal.integrated.defaultProfile.linux": "zsh",
+      "terminal.integrated.profiles.linux": {
+        "zsh": {
+          "path": "zsh"
+        }
+      }
+    }
+  },
+  "postStartCommand": "/bin/zsh"
+}
