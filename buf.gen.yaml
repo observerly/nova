@@ -1,0 +1,12 @@
+version: v1
+managed:
+  enabled: true
+  go_package_prefix: 
+    default: birpc/internal/gen
+plugins:
+  - name: go
+    opt: paths=source_relative
+    out: internal/gen
+  - name: connect-go
+    opt: paths=source_relative
+    out: internal/gen
