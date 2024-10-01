@@ -2,8 +2,14 @@
 
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
 
+ARG BUILDER_IMAGE=golang:1.22-alpine
+
+# //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
+
 # Building the binary of the App
-FROM golang:latest AS base
+FROM ${BUILDER_IMAGE} AS base
+
+RUN apk update && apk add --no-cache git openssh-client ca-certificates tzdata && update-ca-certificates
 
 # Set the working directory to /app
 WORKDIR /usr/src/app
@@ -11,24 +17,10 @@ WORKDIR /usr/src/app
 # Copy all the Code and stuff to compile everything
 COPY . .
 
+RUN apk update && apk add --no-cache git openssh-client ca-certificates tzdata && update-ca-certificates
+
 # Downloads all the dependencies in advance (could be left out, but it's more clear this way)
-RUN go mod download
-
-# //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
-
-# Build the binary of the Tailscale VPN
-FROM alpine:latest AS tailscale
-
-# `boilerplate` should be replaced with your project name
-WORKDIR /usr/src/app
-
-# Set the environment variable for the Tailscale binary download file:
-ENV TSFILE=tailscale_latest_amd64.tgz
-
-RUN wget https://pkgs.tailscale.com/stable/${TSFILE} && \
-  tar xzf ${TSFILE} --strip-components=1
-
-COPY . ./
+RUN go build -o /server cmd/api/main.go
 
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
 
@@ -82,5 +74,19 @@ RUN sh -c "$(wget -O- https://github.com/deluan/zsh-in-docker/releases/download/
 
 # Copy across all the files
 COPY . /usr/src/app
+
+# //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
+
+# Moving the binary to the 'final Image' to make it smaller
+FROM scratch AS production
+
+COPY --from=base /usr/share/zoneinfo /usr/share/zoneinfo
+COPY --from=base /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY --from=base /etc/passwd /etc/passwd
+COPY --from=base /etc/group /etc/group
+
+COPY --from=base /server .
+
+CMD ["/server"]
 
 # //////////////////////////////////////////////////////////////////////////////////////////////////////////////////// #
