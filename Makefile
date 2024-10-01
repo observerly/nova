@@ -16,16 +16,16 @@ buff:
 
 migrate:
 	atlas schema apply \
-	--url "mysql://user:password@localhost:3306/observerly" \
+	--url "mysql://user:password@db:3306/observerly" \
 	--to "file://migrations" \
-	--dev-url "mysql://user:password@localhost:3306/observerly" \
+	--dev-url "mysql://user:password@db:3306/observerly" \
 	--auto-approve
 
 #/*****************************************************************************************************************/
 
 clean:
 	atlas schema clean \
-	--url "mysql://user:password@localhost:3306/observerly"
+	--url "mysql://user:password@db:3306/observerly"
 
 #/*****************************************************************************************************************/
 
