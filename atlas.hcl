@@ -9,7 +9,7 @@ data "external_schema" "gorm" {
 
 env "gorm" {
   src = data.external_schema.gorm.url
-  dev = "mysql://user:password@localhost:3306/observerly"
+  dev = "mysql://user:password@db:3306/observerly"
   migration {
     dir = "file://migrations"
   }
