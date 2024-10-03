@@ -1,0 +1,33 @@
+steps:
+  - name: 'gcr.io/kaniko-project/executor:latest'
+    id: 'Build & Push Image'
+    args:
+      - '--destination=us.gcr.io/$PROJECT_ID/$_IMAGE_NAME:$SHORT_SHA'
+      - '--destination=us.gcr.io/$PROJECT_ID/$_IMAGE_NAME:latest'
+      - '--dockerfile=Dockerfile'
+      - '--context=.'
+      - '--target=production'
+      - '--cache=true'
+      - '--cache-ttl=120h'
+
+  - id: 'Deploy to Cloud Run'
+    name: 'gcr.io/cloud-builders/gcloud'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud run deploy $_SERVICE_NAME \
+        --image=us.gcr.io/$PROJECT_ID/$_IMAGE_NAME:$SHORT_SHA \
+        --region=$_REGION_NAME \
+        --platform managed \
+        --allow-unauthenticated \
+        --port=50051 \
+
+substitutions:
+  # Google Cloud Build / Run variables:
+  _IMAGE_NAME: observerly-birpc
+  _REGION_NAME: us-central1
+  _SERVICE_NAME: "store"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
