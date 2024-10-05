@@ -5,6 +5,7 @@ go 1.22.4
 require (
 	ariga.io/atlas-provider-gorm v0.5.0
 	cloud.google.com/go/compute/metadata v0.5.2
+	cloud.google.com/go/storage v1.43.0
 	connectrpc.com/connect v1.16.2
 	connectrpc.com/grpchealth v1.3.0
 	connectrpc.com/grpcreflect v1.2.0
@@ -25,7 +26,6 @@ require (
 	cloud.google.com/go/firestore v1.16.0 // indirect
 	cloud.google.com/go/iam v1.2.0 // indirect
 	cloud.google.com/go/longrunning v0.6.0 // indirect
-	cloud.google.com/go/storage v1.43.0 // indirect
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/MicahParks/keyfunc v1.9.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
