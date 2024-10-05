@@ -41,6 +41,9 @@ const (
 // reflection-formatted method names, remove the leading slash and convert the remaining slash to a
 // period.
 const (
+	// StorageServiceGetFITSAsJPEGHandlerProcedure is the fully-qualified name of the StorageService's
+	// GetFITSAsJPEGHandler RPC.
+	StorageServiceGetFITSAsJPEGHandlerProcedure = "/store.v1.StorageService/GetFITSAsJPEGHandler"
 	// StorageServiceGetFITSAsTIFFHandlerProcedure is the fully-qualified name of the StorageService's
 	// GetFITSAsTIFFHandler RPC.
 	StorageServiceGetFITSAsTIFFHandlerProcedure = "/store.v1.StorageService/GetFITSAsTIFFHandler"
@@ -49,11 +52,13 @@ const (
 // These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
 var (
 	storageServiceServiceDescriptor                    = v1.File_store_v1_store_proto.Services().ByName("StorageService")
+	storageServiceGetFITSAsJPEGHandlerMethodDescriptor = storageServiceServiceDescriptor.Methods().ByName("GetFITSAsJPEGHandler")
 	storageServiceGetFITSAsTIFFHandlerMethodDescriptor = storageServiceServiceDescriptor.Methods().ByName("GetFITSAsTIFFHandler")
 )
 
 // StorageServiceClient is a client for the store.v1.StorageService service.
 type StorageServiceClient interface {
+	GetFITSAsJPEGHandler(context.Context, *connect.Request[v1.GetFITSAsGenericHandlerRequest]) (*connect.Response[v1.GetFITSAsGenericHandlerResponse], error)
 	GetFITSAsTIFFHandler(context.Context, *connect.Request[v1.GetFITSAsGenericHandlerRequest]) (*connect.Response[v1.GetFITSAsGenericHandlerResponse], error)
 }
 
@@ -67,6 +72,12 @@ type StorageServiceClient interface {
 func NewStorageServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) StorageServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
 	return &storageServiceClient{
+		getFITSAsJPEGHandler: connect.NewClient[v1.GetFITSAsGenericHandlerRequest, v1.GetFITSAsGenericHandlerResponse](
+			httpClient,
+			baseURL+StorageServiceGetFITSAsJPEGHandlerProcedure,
+			connect.WithSchema(storageServiceGetFITSAsJPEGHandlerMethodDescriptor),
+			connect.WithClientOptions(opts...),
+		),
 		getFITSAsTIFFHandler: connect.NewClient[v1.GetFITSAsGenericHandlerRequest, v1.GetFITSAsGenericHandlerResponse](
 			httpClient,
 			baseURL+StorageServiceGetFITSAsTIFFHandlerProcedure,
@@ -78,7 +89,13 @@ func NewStorageServiceClient(httpClient connect.HTTPClient, baseURL string, opts
 
 // storageServiceClient implements StorageServiceClient.
 type storageServiceClient struct {
+	getFITSAsJPEGHandler *connect.Client[v1.GetFITSAsGenericHandlerRequest, v1.GetFITSAsGenericHandlerResponse]
 	getFITSAsTIFFHandler *connect.Client[v1.GetFITSAsGenericHandlerRequest, v1.GetFITSAsGenericHandlerResponse]
+}
+
+// GetFITSAsJPEGHandler calls store.v1.StorageService.GetFITSAsJPEGHandler.
+func (c *storageServiceClient) GetFITSAsJPEGHandler(ctx context.Context, req *connect.Request[v1.GetFITSAsGenericHandlerRequest]) (*connect.Response[v1.GetFITSAsGenericHandlerResponse], error) {
+	return c.getFITSAsJPEGHandler.CallUnary(ctx, req)
 }
 
 // GetFITSAsTIFFHandler calls store.v1.StorageService.GetFITSAsTIFFHandler.
@@ -88,6 +105,7 @@ func (c *storageServiceClient) GetFITSAsTIFFHandler(ctx context.Context, req *co
 
 // StorageServiceHandler is an implementation of the store.v1.StorageService service.
 type StorageServiceHandler interface {
+	GetFITSAsJPEGHandler(context.Context, *connect.Request[v1.GetFITSAsGenericHandlerRequest]) (*connect.Response[v1.GetFITSAsGenericHandlerResponse], error)
 	GetFITSAsTIFFHandler(context.Context, *connect.Request[v1.GetFITSAsGenericHandlerRequest]) (*connect.Response[v1.GetFITSAsGenericHandlerResponse], error)
 }
 
@@ -97,6 +115,12 @@ type StorageServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewStorageServiceHandler(svc StorageServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	storageServiceGetFITSAsJPEGHandlerHandler := connect.NewUnaryHandler(
+		StorageServiceGetFITSAsJPEGHandlerProcedure,
+		svc.GetFITSAsJPEGHandler,
+		connect.WithSchema(storageServiceGetFITSAsJPEGHandlerMethodDescriptor),
+		connect.WithHandlerOptions(opts...),
+	)
 	storageServiceGetFITSAsTIFFHandlerHandler := connect.NewUnaryHandler(
 		StorageServiceGetFITSAsTIFFHandlerProcedure,
 		svc.GetFITSAsTIFFHandler,
@@ -105,6 +129,8 @@ func NewStorageServiceHandler(svc StorageServiceHandler, opts ...connect.Handler
 	)
 	return "/store.v1.StorageService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
+		case StorageServiceGetFITSAsJPEGHandlerProcedure:
+			storageServiceGetFITSAsJPEGHandlerHandler.ServeHTTP(w, r)
 		case StorageServiceGetFITSAsTIFFHandlerProcedure:
 			storageServiceGetFITSAsTIFFHandlerHandler.ServeHTTP(w, r)
 		default:
@@ -115,6 +141,10 @@ func NewStorageServiceHandler(svc StorageServiceHandler, opts ...connect.Handler
 
 // UnimplementedStorageServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedStorageServiceHandler struct{}
+
+func (UnimplementedStorageServiceHandler) GetFITSAsJPEGHandler(context.Context, *connect.Request[v1.GetFITSAsGenericHandlerRequest]) (*connect.Response[v1.GetFITSAsGenericHandlerResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("store.v1.StorageService.GetFITSAsJPEGHandler is not implemented"))
+}
 
 func (UnimplementedStorageServiceHandler) GetFITSAsTIFFHandler(context.Context, *connect.Request[v1.GetFITSAsGenericHandlerRequest]) (*connect.Response[v1.GetFITSAsGenericHandlerResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("store.v1.StorageService.GetFITSAsTIFFHandler is not implemented"))
