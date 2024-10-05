@@ -12,7 +12,9 @@ require (
 	firebase.google.com/go/v4 v4.14.1
 	github.com/google/uuid v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/observerly/iris v0.34.0
 	github.com/rs/zerolog v1.33.0
+	golang.org/x/image v0.20.0
 	golang.org/x/net v0.29.0
 	google.golang.org/api v0.199.0
 	google.golang.org/grpc v1.67.1
