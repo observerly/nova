@@ -20,8 +20,14 @@
 # Go workspace file
 go.work
 go.work.sum
+tmp/
+
+# IDE specific files
+.idea
 
 # Environment
+*.env
+*.env.config
 .env
 .env.*
 !.env.example
@@ -32,3 +38,24 @@ go.work.sum
 
 # Generated go Output:
 temp
+
+# SQLite
+*.sqlite3
+*sqlite.db
+*.db
+
+# Google Cloud Platform
+*.pem
+*-service-account.json
+
+# Node.js / npm
+node_modules
+
+# Ignore the generated client
+/src/client
+
+# Ignore the playground directory
+/src/playground
+
+# JS Bundled Output
+/dist
