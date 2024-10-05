@@ -12,18 +12,23 @@ package storage
 
 import (
 	pb "birpc/internal/gen/store/v1/storev1connect"
+
+	firebase "firebase.google.com/go/v4"
 )
 
 /*****************************************************************************************************************/
 
 type server struct {
 	pb.UnimplementedStorageServiceHandler
+	App *firebase.App
 }
 
 /*****************************************************************************************************************/
 
-func NewStorageServer() *server {
-	return &server{}
+func NewStorageServer(app *firebase.App) *server {
+	return &server{
+		App: app,
+	}
 }
 
 /*****************************************************************************************************************/

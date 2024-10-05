@@ -29,6 +29,7 @@ import (
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
 
+	"birpc/internal/adapters"
 	"birpc/internal/gen/store/v1/storev1connect"
 )
 
@@ -54,6 +55,13 @@ func main() {
 		log.Fatal().Err(err).Msg("Cannot read config")
 	}
 
+	// Setup the Firebase app:
+	app, err := adapters.SetupFirebaseApp()
+
+	if err != nil {
+		log.Fatal().Err(err).Msg("Cannot setup Firebase app")
+	}
+
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM)
 	defer stop()
 
@@ -62,7 +70,7 @@ func main() {
 
 	// Register our Store service:
 	path, handler := storev1connect.NewStorageServiceHandler(
-		storage.NewStorageServer(),
+		storage.NewStorageServer(app),
 	)
 
 	reflector := grpcreflect.NewStaticReflector(
