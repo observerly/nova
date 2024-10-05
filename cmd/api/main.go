@@ -11,8 +11,6 @@ package main
 /*****************************************************************************************************************/
 
 import (
-	"birpc/service/model"
-	"birpc/service/storage"
 	"context"
 	"fmt"
 	"net/http"
@@ -31,6 +29,8 @@ import (
 
 	"birpc/internal/adapters"
 	"birpc/internal/gen/store/v1/storev1connect"
+	"birpc/service/model"
+	"birpc/service/storage"
 )
 
 /*****************************************************************************************************************/
@@ -63,6 +63,13 @@ func main() {
 	}
 
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM)
+
+	client, err := app.Storage(ctx)
+
+	if err != nil {
+		log.Fatal().Err(err).Msg("Cannot setup Firebase storage client")
+	}
+
 	defer stop()
 
 	// Setup our base gRPC server:
@@ -70,7 +77,7 @@ func main() {
 
 	// Register our Store service:
 	path, handler := storev1connect.NewStorageServiceHandler(
-		storage.NewStorageServer(app),
+		storage.NewStorageServer(app, client),
 	)
 
 	reflector := grpcreflect.NewStaticReflector(
