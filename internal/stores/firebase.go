@@ -17,6 +17,7 @@ import (
 	"io"
 
 	"firebase.google.com/go/v4/storage"
+	"github.com/google/uuid"
 )
 
 /*****************************************************************************************************************/
@@ -70,6 +71,69 @@ func (f *FirebaseStore) RetriveBuffer(
 	}
 
 	return buff, nil
+}
+
+/*****************************************************************************************************************/
+
+type StoreBufferParams struct {
+	ContentType string
+	Owner       string
+}
+
+/*****************************************************************************************************************/
+
+func (f *FirebaseStore) StoreBuffer(
+	ctx context.Context,
+	buff *bytes.Buffer,
+	bucketName string,
+	location string,
+	params StoreBufferParams,
+) error {
+	id := uuid.New()
+
+	bucket, err := f.Client.Bucket(bucketName)
+
+	// If there is an error setting up the Firebase Storage bucket, return an error 500 response:
+	if err != nil {
+		return err
+	}
+
+	// Create a new object in the bucket:
+	obj := bucket.Object(location)
+
+	// Create a new writer for the object:
+	w := obj.NewWriter(ctx)
+
+	// Set the ContentType of the object:
+	w.ContentType = params.ContentType
+	// Set the Cache-Control header for the object:
+	w.ObjectAttrs.CacheControl = "public, max-age=31536000"
+	// Set the ContentType metadata for the object:
+	w.ObjectAttrs.ContentType = params.ContentType
+	// Set the Owner metadata for the object:
+	w.ObjectAttrs.Owner = fmt.Sprintf("user-%s", params.Owner)
+	// Set the firebaseStorageDownloadTokens Metadata of the object:
+	w.ObjectAttrs.Metadata = map[string]string{"firebaseStorageDownloadTokens": id.String()}
+
+	// Write the buffer to the object:
+	_, err = w.Write(buff.Bytes())
+
+	if err != nil {
+		return err
+	}
+
+	// Close the writer:
+	err = w.Close()
+
+	if err != nil {
+		return err
+	}
+
+	// Reset the buffer:
+	buff.Reset()
+
+	// By default we return a nil error:
+	return nil
 }
 
 /*****************************************************************************************************************/
