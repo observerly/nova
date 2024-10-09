@@ -23,6 +23,7 @@ import (
 
 	cloud "cloud.google.com/go/storage"
 	"connectrpc.com/connect"
+	"github.com/observerly/iris/pkg/image"
 	"github.com/rs/zerolog/log"
 )
 
@@ -41,8 +42,32 @@ func (s *server) GetFITSAsJPEGHandler(ctx context.Context, req *connect.Request[
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
-	// Get the image from the storage client as a 16-bit grayscale image:
-	img, err := s.getFITSAsGray16Image(ctx, req.Msg.BucketName, req.Msg.Location)
+	// Get the FITS file from the storage client:
+	fit, err := s.RetrieveFITSFromStorage(ctx, req.Msg.BucketName, req.Msg.Location)
+
+	if err != nil {
+		s.Logger.Error().Err(err).Msg("Failed to retrieve FITS from storage")
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+
+	// We know the image is 2D, so we can extract the width from the fits image:
+	width := fit.Header.Naxis1
+
+	// We know the image is 2D, so we can extract the height from the fits image:
+	height := fit.Header.Naxis2
+
+	if fit.Pixels != width*height {
+		s.Logger.Error().Msg("Failed to read exposure data")
+		return nil, fmt.Errorf("failed to read exposure data as the number of pixels does not match the width and height")
+	}
+
+	// Convert the FITS exposure data to a 16-bit grayscale image:
+	img, err := image.NewGray16FromRawFloat32Pixels(fit.Data, int(fit.Header.Naxis1))
+
+	if err != nil {
+		s.Logger.Error().Err(err).Msg("Failed to convert exposure data to image")
+		return nil, err
+	}
 
 	if err != nil {
 		s.Logger.Error().Err(err).Msg("Failed to get image as 16-bit grayscale from FITS")
