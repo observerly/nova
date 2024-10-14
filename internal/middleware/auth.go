@@ -50,3 +50,25 @@ func IsAuthenticated(ctx context.Context, req connect.AnyRequest, auth *auth.Cli
 }
 
 /*****************************************************************************************************************/
+
+func MustHaveAuthentication[T any](
+	ctx context.Context,
+	req connect.AnyRequest,
+	auth *auth.Client,
+	handlerFunc func() (*connect.Response[T], error),
+) (*connect.Response[T], error) {
+	isAuthed, err := IsAuthenticated(ctx, req, auth)
+
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("error checking user claims: %w", err))
+	}
+
+	if !isAuthed {
+		return nil, connect.NewError(connect.CodePermissionDenied, fmt.Errorf("user does not have valid claims"))
+	}
+
+	// Call the actual handler function:
+	return handlerFunc()
+}
+
+/*****************************************************************************************************************/
