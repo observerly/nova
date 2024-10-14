@@ -19,6 +19,7 @@ import (
 	"time"
 
 	pb "birpc/internal/gen/store/v1"
+	"birpc/internal/middleware"
 	"birpc/internal/stores"
 
 	cloud "cloud.google.com/go/storage"
@@ -29,7 +30,7 @@ import (
 
 /*****************************************************************************************************************/
 
-func (s *server) GetFITSAsJPEGHandler(ctx context.Context, req *connect.Request[pb.GetFITSAsGenericHandlerRequest]) (*connect.Response[pb.GetFITSAsGenericHandlerResponse], error) {
+func (s *server) getFITSAsJPEG(ctx context.Context, req *connect.Request[pb.GetFITSAsGenericHandlerRequest]) (*connect.Response[pb.GetFITSAsGenericHandlerResponse], error) {
 	now := time.Now()
 
 	s.Logger = log.With().Str("owner", req.Msg.Owner).Str("bucket", req.Msg.BucketName).Str("location", req.Msg.Location).Str("rfc3339", now.Format(time.RFC3339)).Logger()
@@ -139,6 +140,21 @@ func (s *server) GetFITSAsJPEGHandler(ctx context.Context, req *connect.Request[
 		Height:      int32(bounds.Dy()),
 		Width:       int32(bounds.Dx()),
 	}), nil
+}
+
+/*****************************************************************************************************************/
+
+func (s *server) GetFITSAsJPEGHandler(ctx context.Context, req *connect.Request[pb.GetFITSAsGenericHandlerRequest]) (*connect.Response[pb.GetFITSAsGenericHandlerResponse], error) {
+	auth, err := s.App.Auth(ctx)
+
+	if err != nil {
+		s.Logger.Error().Err(err).Msg("Failed to authenticate user")
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to authenticate user: %w", err))
+	}
+
+	return middleware.MustHaveAuthentication(ctx, req, auth, func() (*connect.Response[pb.GetFITSAsGenericHandlerResponse], error) {
+		return s.getFITSAsJPEG(ctx, req)
+	})
 }
 
 /*****************************************************************************************************************/
