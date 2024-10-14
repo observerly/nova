@@ -2,7 +2,14 @@ version: v1
 name: buf.build/observerly/protorepo
 lint:
   use:
-    - DEFAULT
+    - STANDARD
+  ignore_only:
+    RPC_REQUEST_STANDARD_NAME:
+      - store/v1/store.proto
+    RPC_RESPONSE_STANDARD_NAME:
+      - store/v1/store.proto
+    RPC_REQUEST_RESPONSE_UNIQUE:
+      - store/v1/store.proto
 breaking:
   use:
     - FILE

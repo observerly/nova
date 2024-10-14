@@ -1,0 +1,41 @@
+name: protorepo/publish
+
+on:
+  # Apply to all pull requests on the main branch
+  pull_request:
+    branches:
+      - main
+
+  release:
+    types: [published]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  publish:
+    strategy:
+      matrix:
+        os: [ ubuntu-latest ]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout 🛎
+      uses: actions/checkout@v4
+
+    # Install the `buf` CLI
+    - name: Install buf CLI
+      uses: bufbuild/buf-setup-action@v1
+
+    # Push only the Input in `proto` to the BSR (Buf Schema Registry):
+    - name: Push to Buf Schema Registry
+      uses: bufbuild/buf-push-action@v1
+      with:
+        input: proto
+        buf_token: ${{ secrets.BUF_API_TOKEN }}
+        create_visibility: private
+        draft: ${{ github.ref_name != 'main'}}
+        # Optional GitHub token for API requests. Ensures requests aren't rate limited.
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
