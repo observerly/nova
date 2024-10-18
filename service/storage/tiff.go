@@ -23,6 +23,8 @@ import (
 
 	cloud "cloud.google.com/go/storage"
 	"connectrpc.com/connect"
+	"github.com/observerly/iris/pkg/astrotiff"
+	metadata "github.com/observerly/iris/pkg/ifd"
 	"github.com/observerly/iris/pkg/image"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/image/tiff"
@@ -75,11 +77,44 @@ func (s *server) getFITSAsTIFF(ctx context.Context, req *connect.Request[pb.GetF
 		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to get image as 16-bit grayscale from FITS: %w", err))
 	}
 
-	// Create a new buffer to store the object data:
+	// Create a new buffer to store the header data:
+	headerb := new(bytes.Buffer)
+
+	// Write the FITS header to the buffer:
+	headerb, err = fit.Header.WriteToBuffer(headerb)
+
+	if err != nil {
+		s.Logger.Error().Err(err).Msg("Failed to write header to buffer")
+		return nil, connect.NewError(connect.CodeInternal, fmt.Errorf("failed to write header to buffer: %w", err))
+	}
+
+	// Convert the FITS header to a series of uint32 values:
+	var description []uint32
+	for _, b := range fit.Header.AddLineFeedCharacteToHeaderRow(headerb.Bytes(), "\n") {
+		description = append(description, uint32(b))
+	}
+
+	// Create an Image File Directory (IFD) for the TIFF:
+	ifd := []metadata.IFDEntry{
+		{
+			Tag:      metadata.TagTypeImageDescription,
+			DataType: metadata.DataTypeASCII,
+			Data:     description,
+		},
+		{
+			Tag:      metadata.TagTypeOrientation,
+			DataType: metadata.DataTypeShort,
+			Data:     []uint32{1},
+		},
+	}
+
+	// Create a new buffer to store the image data:
 	tiffb := new(bytes.Buffer)
 
-	// Encode the image as a TIFF:
-	err = tiff.Encode(tiffb, img, nil)
+	// Encode the image as a TIFF with Deflate compression and horizontal predictor:
+	err = astrotiff.Encode(tiffb, img, &tiff.Options{
+		Compression: tiff.Deflate,
+	}, ifd)
 
 	if err != nil {
 		s.Logger.Error().Err(err).Msg("Failed to encode image as TIFF")
