@@ -1,7 +1,7 @@
 /*****************************************************************************************************************/
 
 //	@author		Michael Roberts <michael@observerly.com>
-//	@package	@observerly/birpc/loader
+//	@package	@observerly/nova/loader
 //	@license	Copyright © 2021-2024 observerly
 
 /*****************************************************************************************************************/
