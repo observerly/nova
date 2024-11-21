@@ -14,7 +14,7 @@ import (
 	"context"
 	"fmt"
 
-	pb "birpc/internal/gen/store/v1/storev1connect"
+	pb "nova/internal/gen/store/v1/storev1connect"
 
 	firebase "firebase.google.com/go/v4"
 	"firebase.google.com/go/v4/storage"
@@ -22,7 +22,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 
-	"birpc/internal/stores"
+	"nova/internal/stores"
 )
 
 /*****************************************************************************************************************/
