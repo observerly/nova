@@ -1,3 +1,3 @@
-# birpc
+# nova
 
-A proof-of-concept implementation of a connect rpc gRPC server / client
+observerly's lightweight utility gRPC API for performing astrometric plate solving, alignment and stacking
