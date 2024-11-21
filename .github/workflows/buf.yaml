@@ -30,7 +30,7 @@ jobs:
       uses: bufbuild/buf-breaking-action@v1
       with:
         input: proto
-        against: 'https://github.com/observerly/birpc.git#branch=main,ref=HEAD~1,subdir=proto'
+        against: 'https://github.com/observerly/nova.git#branch=main,ref=HEAD~1,subdir=proto'
 
     # Check for lint errors in the 'proto' directory on all pull requests
     - name: Check for Buf lint errors
