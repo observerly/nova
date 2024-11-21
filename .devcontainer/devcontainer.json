@@ -5,7 +5,7 @@
     "development",
     "db"
   ],
-  "workspaceFolder": "/observerly-birpc",
+  "workspaceFolder": "/observerly-nova",
   "customizations": {
     "vscode": {
       "extensions": [
