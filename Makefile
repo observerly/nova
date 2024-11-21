@@ -1,11 +1,11 @@
 #/*****************************************************************************************************************/
 
-NAME=observerly-birpc
+NAME=observerly-nova
 
 #/*****************************************************************************************************************/
 
 run: buff diff migrate
-	BIRPC_DSN="root:pass@tcp(127.0.0.1:3306)/observerly?charset=utf8mb4&parseTime=True&loc=Local" go run cmd/api/main.go
+	NOVA_DSN="root:pass@tcp(127.0.0.1:3306)/observerly?charset=utf8mb4&parseTime=True&loc=Local" go run cmd/api/main.go
 
 #/*****************************************************************************************************************/
 
