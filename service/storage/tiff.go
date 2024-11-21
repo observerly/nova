@@ -17,9 +17,9 @@ import (
 	"strings"
 	"time"
 
-	pb "birpc/internal/gen/store/v1"
-	"birpc/internal/middleware"
-	"birpc/internal/stores"
+	pb "nova/internal/gen/store/v1"
+	"nova/internal/middleware"
+	"nova/internal/stores"
 
 	cloud "cloud.google.com/go/storage"
 	"connectrpc.com/connect"

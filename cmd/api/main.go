@@ -27,10 +27,10 @@ import (
 	"golang.org/x/net/http2/h2c"
 	"google.golang.org/grpc"
 
-	"birpc/internal/adapters"
-	"birpc/internal/gen/store/v1/storev1connect"
-	"birpc/service/model"
-	"birpc/service/storage"
+	"nova/internal/adapters"
+	"nova/internal/gen/store/v1/storev1connect"
+	"nova/service/model"
+	"nova/service/storage"
 )
 
 /*****************************************************************************************************************/
