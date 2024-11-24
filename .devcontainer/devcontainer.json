@@ -1,6 +1,7 @@
 {
   "dockerComposeFile": "../local.yaml",
   "service": "development",
+  "name": "nova",
   "runServices": [
     "development",
     "db"
