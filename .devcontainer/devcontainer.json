@@ -6,7 +6,7 @@
     "development",
     "db"
   ],
-  "workspaceFolder": "/observerly-nova",
+  "workspaceFolder": "/nova",
   "customizations": {
     "vscode": {
       "extensions": [
