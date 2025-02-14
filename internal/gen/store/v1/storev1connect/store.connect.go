@@ -13,11 +13,11 @@
 package storev1connect
 
 import (
-	v1 "nova/internal/gen/store/v1"
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
 	http "net/http"
+	v1 "nova/internal/gen/store/v1"
 	strings "strings"
 )
 
@@ -49,13 +49,6 @@ const (
 	StorageServiceGetFITSAsTIFFHandlerProcedure = "/store.v1.StorageService/GetFITSAsTIFFHandler"
 )
 
-// These variables are the protoreflect.Descriptor objects for the RPCs defined in this package.
-var (
-	storageServiceServiceDescriptor                    = v1.File_store_v1_store_proto.Services().ByName("StorageService")
-	storageServiceGetFITSAsJPEGHandlerMethodDescriptor = storageServiceServiceDescriptor.Methods().ByName("GetFITSAsJPEGHandler")
-	storageServiceGetFITSAsTIFFHandlerMethodDescriptor = storageServiceServiceDescriptor.Methods().ByName("GetFITSAsTIFFHandler")
-)
-
 // StorageServiceClient is a client for the store.v1.StorageService service.
 type StorageServiceClient interface {
 	GetFITSAsJPEGHandler(context.Context, *connect.Request[v1.GetFITSAsGenericHandlerRequest]) (*connect.Response[v1.GetFITSAsGenericHandlerResponse], error)
@@ -71,17 +64,18 @@ type StorageServiceClient interface {
 // http://api.acme.com or https://acme.com/grpc).
 func NewStorageServiceClient(httpClient connect.HTTPClient, baseURL string, opts ...connect.ClientOption) StorageServiceClient {
 	baseURL = strings.TrimRight(baseURL, "/")
+	storageServiceMethods := v1.File_store_v1_store_proto.Services().ByName("StorageService").Methods()
 	return &storageServiceClient{
 		getFITSAsJPEGHandler: connect.NewClient[v1.GetFITSAsGenericHandlerRequest, v1.GetFITSAsGenericHandlerResponse](
 			httpClient,
 			baseURL+StorageServiceGetFITSAsJPEGHandlerProcedure,
-			connect.WithSchema(storageServiceGetFITSAsJPEGHandlerMethodDescriptor),
+			connect.WithSchema(storageServiceMethods.ByName("GetFITSAsJPEGHandler")),
 			connect.WithClientOptions(opts...),
 		),
 		getFITSAsTIFFHandler: connect.NewClient[v1.GetFITSAsGenericHandlerRequest, v1.GetFITSAsGenericHandlerResponse](
 			httpClient,
 			baseURL+StorageServiceGetFITSAsTIFFHandlerProcedure,
-			connect.WithSchema(storageServiceGetFITSAsTIFFHandlerMethodDescriptor),
+			connect.WithSchema(storageServiceMethods.ByName("GetFITSAsTIFFHandler")),
 			connect.WithClientOptions(opts...),
 		),
 	}
@@ -115,16 +109,17 @@ type StorageServiceHandler interface {
 // By default, handlers support the Connect, gRPC, and gRPC-Web protocols with the binary Protobuf
 // and JSON codecs. They also support gzip compression.
 func NewStorageServiceHandler(svc StorageServiceHandler, opts ...connect.HandlerOption) (string, http.Handler) {
+	storageServiceMethods := v1.File_store_v1_store_proto.Services().ByName("StorageService").Methods()
 	storageServiceGetFITSAsJPEGHandlerHandler := connect.NewUnaryHandler(
 		StorageServiceGetFITSAsJPEGHandlerProcedure,
 		svc.GetFITSAsJPEGHandler,
-		connect.WithSchema(storageServiceGetFITSAsJPEGHandlerMethodDescriptor),
+		connect.WithSchema(storageServiceMethods.ByName("GetFITSAsJPEGHandler")),
 		connect.WithHandlerOptions(opts...),
 	)
 	storageServiceGetFITSAsTIFFHandlerHandler := connect.NewUnaryHandler(
 		StorageServiceGetFITSAsTIFFHandlerProcedure,
 		svc.GetFITSAsTIFFHandler,
-		connect.WithSchema(storageServiceGetFITSAsTIFFHandlerMethodDescriptor),
+		connect.WithSchema(storageServiceMethods.ByName("GetFITSAsTIFFHandler")),
 		connect.WithHandlerOptions(opts...),
 	)
 	return "/store.v1.StorageService/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
