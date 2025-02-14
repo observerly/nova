@@ -1,6 +1,8 @@
 module nova
 
-go 1.22.4
+go 1.23.2
+
+toolchain go1.23.3
 
 require (
 	ariga.io/atlas-provider-gorm v0.5.0
@@ -12,7 +14,7 @@ require (
 	firebase.google.com/go/v4 v4.14.1
 	github.com/google/uuid v1.6.0
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/observerly/iris v0.35.0
+	github.com/observerly/iris v0.41.0
 	github.com/rs/zerolog v1.33.0
 	golang.org/x/image v0.20.0
 	golang.org/x/net v0.29.0
