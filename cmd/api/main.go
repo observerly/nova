@@ -36,7 +36,7 @@ import (
 /*****************************************************************************************************************/
 
 const (
-	serviceName = "storage"
+	serviceName = "nova"
 )
 
 /*****************************************************************************************************************/
@@ -76,7 +76,7 @@ func main() {
 	s := grpc.NewServer()
 
 	// Register our Store service:
-	path, handler := storev1connect.NewStorageServiceHandler(
+	storePath, storeHandler := storev1connect.NewStorageServiceHandler(
 		storage.NewStorageServer(app, client),
 	)
 
@@ -90,8 +90,8 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// Register our service with the gRPC server:
-	mux.Handle(path, handler)
+	// Register our store service with the gRPC server:
+	mux.Handle(storePath, storeHandler)
 
 	// Register reflection service on gRPC server:
 	mux.Handle(grpcreflect.NewHandlerV1(reflector))
@@ -104,7 +104,7 @@ func main() {
 
 	// Start gRPC http server h2c handler - run in a go function so we can better handle SIGTERM:
 	go func() {
-		log.Info().Msgf("Server running on %v%s", fmt.Sprintf("http://%s:%d", config.Host, config.Port), path)
+		log.Info().Msgf("Server running on %v", fmt.Sprintf("http://%s:%d", config.Host, config.Port))
 
 		err := http.ListenAndServe(
 			fmt.Sprintf("%s:%d", config.Host, config.Port),
