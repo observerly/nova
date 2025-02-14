@@ -10,7 +10,7 @@ services:
     image: observerly/nova:development
     container_name: observerly_nova_development
     volumes:
-      - .:/observerly-nova
+      - .:/nova
     depends_on:
       - db
     env_file:
