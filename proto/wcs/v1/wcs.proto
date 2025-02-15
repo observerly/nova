@@ -1,0 +1,115 @@
+/*****************************************************************************************************************/
+
+//	@author		Michael Roberts <michael@observerly.com>
+//	@package	@observerly/nova/proto/solve/v1
+//	@license	Copyright © 2021-2025 observerly
+
+/*****************************************************************************************************************/
+
+// protolint:disable
+
+/*****************************************************************************************************************/
+
+syntax = "proto3";
+
+/*****************************************************************************************************************/
+
+package wcs.v1;
+
+/*****************************************************************************************************************/
+
+// WCS represents World Coordinate System parameters.
+message WCS {
+  // Number of world coordinate axes
+  int32 WCAXES = 1; // Default: 2
+
+  // Reference pixel X
+  double CRPIX1 = 2;
+
+  // Reference pixel Y
+  double CRPIX2 = 3;
+
+  // Reference RA (Default: 0.0)
+  double CRVAL1 = 4;
+
+  // Reference Dec (Default: 0.0)
+  double CRVAL2 = 5;
+
+  // Coordinate type for axis 1, typically RA with TAN projection (Default: "RA---TAN")
+  string CTYPE1 = 6;
+
+  // Coordinate type for axis 2, typically DEC with TAN projection (Default: "DEC--TAN")
+  string CTYPE2 = 7;
+
+  // Coordinate increment for axis 1
+  double CDELT1 = 8;
+
+  // Coordinate increment for axis 2
+  double CDELT2 = 9;
+
+  // Coordinate unit for axis 1 (Default: "deg")
+  string CUNIT1 = 10;
+
+  // Coordinate unit for axis 2 (Default: "deg")
+  string CUNIT2 = 11;
+
+  // Affine transform parameter A
+  double CD1_1 = 12;
+
+  // Affine transform parameter B
+  double CD1_2 = 13;
+
+  // Affine transform parameter C
+  double CD2_1 = 14;
+
+  // Affine transform parameter D
+  double CD2_2 = 15;
+
+  // Affine translation parameter e (optional)
+  double E = 16;
+
+  // Affine translation parameter f (optional)
+  double F = 17;
+
+  // SIP forward transformation (distortion) coefficients
+  SIP2DForwardParameters FSIP = 18;
+
+  // SIP inverse transformation (distortion) coefficients
+  SIP2DInverseParameters ISIP = 19;
+}
+
+/*****************************************************************************************************************/
+
+// SIP2DForwardParameters contains polynomial coefficients for forward SIP transformation.
+message SIP2DForwardParameters {
+  // Order of the A polynomial
+  int32 AOrder = 1;
+
+  // Polynomial coefficients for A
+  map<string, double> APower = 2;
+
+  // Order of the B polynomial
+  int32 BOrder = 3;
+
+  // Polynomial coefficients for B
+  map<string, double> BPower = 4;
+}
+
+/*****************************************************************************************************************/
+
+// SIP2DInverseParameters contains polynomial coefficients for inverse SIP transformation.
+message SIP2DInverseParameters {
+  // Order of the A' polynomial
+  int32 APOrder = 1;
+
+  // Polynomial coefficients for A'
+  map<string, double> APPower = 2;
+
+  // Order of the B' polynomial
+  int32 BPOrder = 3;
+
+  // Polynomial coefficients for B'
+  map<string, double> BPPower = 4;
+}
+
+/*****************************************************************************************************************/
