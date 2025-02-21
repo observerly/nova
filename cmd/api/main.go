@@ -28,8 +28,10 @@ import (
 	"google.golang.org/grpc"
 
 	"nova/internal/adapters"
+	"nova/internal/gen/solve/v1/solvev1connect"
 	"nova/internal/gen/store/v1/storev1connect"
 	"nova/service/model"
+	"nova/service/solve"
 	"nova/service/storage"
 )
 
@@ -80,6 +82,11 @@ func main() {
 		storage.NewStorageServer(app, client),
 	)
 
+	// Register our Solve service:
+	solvePath, solveHandler := solvev1connect.NewSolveServiceHandler(
+		solve.NewSolveServer(app, client),
+	)
+
 	reflector := grpcreflect.NewStaticReflector(
 		storev1connect.StorageServiceName,
 	)
@@ -92,6 +99,9 @@ func main() {
 
 	// Register our store service with the gRPC server:
 	mux.Handle(storePath, storeHandler)
+
+	// Register our solve service with the gRPC server:
+	mux.Handle(solvePath, solveHandler)
 
 	// Register reflection service on gRPC server:
 	mux.Handle(grpcreflect.NewHandlerV1(reflector))
