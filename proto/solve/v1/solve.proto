@@ -23,6 +23,12 @@ message SolveForWCSFITSHandlerRequest {
   string owner = 1;
   string bucket_name = 2;
   string location = 3;
+  optional double ra = 4;
+  optional double dec = 5;
+  optional double pixel_scale_x = 6;
+  optional double pixel_scale_y = 7;
+  optional double radius = 8;
+  optional double sigma = 9;
 }
 
 /*****************************************************************************************************************/
